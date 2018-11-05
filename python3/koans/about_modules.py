@@ -17,21 +17,25 @@ class AboutModules(Koan):
         from . import local_module  # local_module.py
 
         duck = local_module.Duck()
-        self.assertEqual(__, duck.name)
+        self.assertEqual("Daffy", duck.name)
 
     def test_importing_attributes_from_classes_using_from_keyword(self):
         from .local_module import Duck
 
         duck = Duck()  # no module qualifier needed this time
-        self.assertEqual(__, duck.name)
+        self.assertEqual("Daffy", duck.name)
+        
+        # No module qualifier needed because in the first one
+        # you are using '.' as our local directory but in this
+        # one, we are using '.local_module' to import 'Duck'
 
     def test_we_can_import_multiple_items_at_once(self):
         from . import jims, joes
 
         jims_dog = jims.Dog()
         joes_dog = joes.Dog()
-        self.assertEqual(__, jims_dog.identify())
-        self.assertEqual(__, joes_dog.identify())
+        self.assertEqual("jims dog", jims_dog.identify())
+        self.assertEqual("joes dog", joes_dog.identify())
 
     def test_importing_all_module_attributes_at_once(self):
         """
@@ -43,18 +47,18 @@ class AboutModules(Koan):
         goose = Goose()
         hamster = Hamster()
 
-        self.assertEqual(__, goose.name)
-        self.assertEqual(__, hamster.name)
+        self.assertEqual("Mr Stabby", goose.name)
+        self.assertEqual("Phil", hamster.name)
 
     def test_modules_hide_attributes_prefixed_by_underscores(self):
-        with self.assertRaises(___):
+        with self.assertRaises(NameError):
             private_squirrel = _SecretSquirrel()
 
     def test_private_attributes_are_still_accessible_in_modules(self):
         from .local_module import Duck  # local_module.py
 
         duck = Duck()
-        self.assertEqual(__, duck._password)
+        self.assertEqual("password", duck._password)
         # module level attribute hiding doesn't affect class attributes
         # (unless the class itself is hidden).
 
@@ -66,12 +70,19 @@ class AboutModules(Koan):
 
         # 'Goat' is on the __all__ list
         goat = Goat()
-        self.assertEqual(__, goat.name)
+        self.assertEqual("George", goat.name)
 
         # How about velociraptors?
         lizard = _Velociraptor()
-        self.assertEqual(__, lizard.name)
+        self.assertEqual("Cuddles", lizard.name)
+        
+        # Even though '_Velociraptor' is a private class, the '__all__'
+        # is importing it, and the main file will be able to see it
 
         # SecretDuck? Never heard of her!
-        with self.assertRaises(___):
+        with self.assertRaises(NameError):
             duck = SecretDuck()
+            
+    # About relative imports:
+    # https://stackoverflow.com/questions/72852/how-to-do-relative-imports-in-python/73149#73149
+    
